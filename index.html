@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NoxenNavigation — Документация</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0f;
+            color: #e8e8f0;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== САЙДБАР (ВСЕГДА СЛЕВА) ===== */
+        .sidebar {
+            width: 260px;
+            background: #12121a;
+            padding: 20px 16px;
+            border-right: 1px solid #2a2a3a;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        .sidebar .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #a78bfa;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+        .sidebar .logo span { color: #e8e8f0; }
+        .sidebar .subtitle {
+            font-size: 13px;
+            color: #8888aa;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #2a2a3a;
+            padding-bottom: 12px;
+        }
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .sidebar nav a {
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #b0b0c8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar nav a:hover { background: #1f1f2e; color: #fff; }
+        .sidebar nav a.active { background: #2a2a44; color: #a78bfa; }
+        .sidebar nav a .icon { font-size: 16px; width: 24px; text-align: center; }
+
+        /* ===== КОНТЕНТ ===== */
+        .content {
+            flex: 1;
+            padding: 24px 30px 40px;
+            overflow-y: auto;
+            background: #0e0e16;
+            min-height: 100vh;
+        }
+        .content .page {
+            display: none;
+            animation: fade 0.25s ease;
+        }
+        .content .page.active { display: block; }
+        @keyframes fade {
+            0% { opacity: 0.3; transform: translateY(6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .content h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #f0f0ff;
+            margin-bottom: 4px;
+        }
+        .content .breadcrumb {
+            color: #8888aa;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+        .content .breadcrumb span { color: #a78bfa; }
+        .content .card {
+            background: #161620;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 18px;
+            border: 1px solid #2a2a3a;
+        }
+        .content .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f0f0ff;
+            margin-bottom: 10px;
+        }
+        .content .card p {
+            line-height: 1.6;
+            color: #c8c8dd;
+            font-size: 15px;
+        }
+        .content .card ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        .content .card ul li {
+            margin-bottom: 6px;
+            color: #c8c8dd;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        .content .card .badge {
+            display: inline-block;
+            background: #2a2a44;
+            color: #a78bfa;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .content .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .content .grid-2 .card { margin-bottom: 0; }
+
+        /* ===== ГАЛЕРЕЯ СКРИНОВ ===== */
+        .screenshot-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .screenshot-gallery .img-wrap {
+            flex: 1 1 45%;
+            min-width: 240px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #2a2a3a;
+            background: #12121a;
+        }
+        .screenshot-gallery .img-wrap img {
+            width: 100%;
+            display: block;
+            height: auto;
+        }
+        .screenshot-gallery .img-wrap .caption {
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #b0b0c8;
+            border-top: 1px solid #2a2a3a;
+        }
+
+        /* ===== АДАПТАЦИЯ (ТЕЛЕФОН - САЙДБАР СЛЕВА) ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+                padding: 14px 12px;
+                height: 100vh;
+                position: sticky;
+                top: 0;
+            }
+            .sidebar .logo {
+                font-size: 18px;
+            }
+            .sidebar .subtitle {
+                font-size: 11px;
+                margin-bottom: 14px;
+                padding-bottom: 8px;
+            }
+            .sidebar nav a {
+                padding: 8px 10px;
+                font-size: 12px;
+                gap: 6px;
+            }
+            .sidebar nav a .icon {
+                font-size: 14px;
+                width: 20px;
+            }
+            .content {
+                padding: 16px 16px 30px;
+            }
+            .content h1 {
+                font-size: 22px;
+            }
+            .content .breadcrumb {
+                font-size: 12px;
+                margin-bottom: 16px;
+            }
+            .content .card {
+                padding: 16px 18px;
+                margin-bottom: 14px;
+            }
+            .content .card h2 {
+                font-size: 16px;
+            }
+            .content .card p {
+                font-size: 14px;
+            }
+            .content .card ul li {
+                font-size: 13px;
+            }
+            .content .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .screenshot-gallery {
+                gap: 12px;
+            }
+            .screenshot-gallery .img-wrap {
+                flex: 1 1 100%;
+                min-width: 0;
+            }
+            .screenshot-gallery .img-wrap .caption {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 170px;
+                padding: 10px 8px;
+            }
+            .sidebar .logo {
+                font-size: 16px;
+            }
+            .sidebar nav a {
+                padding: 6px 8px;
+                font-size: 11px;
+                gap: 4px;
+            }
+            .sidebar nav a .icon {
+                font-size: 12px;
+                width: 18px;
+            }
+            .content {
+                padding: 12px 12px 24px;
+            }
+            .content h1 {
+                font-size: 19px;
+            }
+            .content .card {
+                padding: 14px 14px;
+                margin-bottom: 12px;
+            }
+            .content .card p {
+                font-size: 13px;
+            }
+            .content .card ul li {
+                font-size: 12px;
+            }
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #2a2a44; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">✦ <span>Noxen</span>Navigation</div>
+        <div class="subtitle">Инструкция для площадки</div>
+        <nav>
+            <a class="active" data-page="welcome"><span class="icon">🏠</span> Приветствие</a>
+            <a data-page="rules"><span class="icon">📋</span> Правила работы</a>
+            <a data-page="functions"><span class="icon">⚙️</span> Функционал</a>
+            <a data-page="profile"><span class="icon">👤</span> Профиль</a>
+            <a data-page="dashboard"><span class="icon">📊</span> Дашборд</a>
+            <a data-page="transactions"><span class="icon">💳</span> Транзакции</a>
+            <a data-page="finance"><span class="icon">💰</span> Финансы</a>
+            <a data-page="payout"><span class="icon">📤</span> PayOut</a>
+            <a data-page="payin"><span class="icon">📥</span> PayIn</a>
+            <a data-page="disputes"><span class="icon">⚖️</span> Споры</a>
+            <a data-page="devices"><span class="icon">📱</span> Реквизиты</a>
+        </nav>
+    </div>
+
+    <div class="content">
+
+        <!-- ==================== ПРИВЕТСТВИЕ ==================== -->
+        <div id="page-welcome" class="page active">
+            <h1>Добро пожаловать!</h1>
+            <div class="breadcrumb">Главная / <span>Приветствие</span></div>
+            <div class="card">
+                <h2>👋 Рады видеть вас в NoxenNavigation</h2>
+                <p>Этот сайт — ваш личный гид по работе с платформой. Здесь вы найдёте все инструкции, правила и описание функций.</p>
+                <p style="margin-top:10px;">Используйте навигацию слева, чтобы быстро перейти к нужному разделу.</p>
+                <div class="badge">v1.0 — Актуально</div>
+            </div>
+            <div class="grid-2">
+                <div class="card">
+                    <h2>📌 Быстрый старт</h2>
+                    <ul>
+                        <li>Ознакомьтесь с <strong>правилами</strong> работы</li>
+                        <li>Изучите <strong>функционал</strong> площадки</li>
+                        <li>Настройте <strong>профиль</strong> и реквизиты</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h2>🆘 Поддержка</h2>
+                    <p>Если у вас остались вопросы — свяжитесь с нами через раздел <strong>«Споры»</strong> или напишите в техподдержку.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ПРАВИЛА ==================== -->
+        <div id="page-rules" class="page">
+            <h1>Правила работы</h1>
+            <div class="breadcrumb">Главная / <span>Правила</span></div>
+            <div class="card">
+                <h2>📋 Основные положения</h2>
+                <ul>
+                    <li><strong>Безопасность:</strong> Все данные передаются по защищённому каналу. Не передавайте свои логины/пароли третьим лицам.</li>
+                    <li><strong>Ответственность:</strong> Вы несёте полную ответственность за свои транзакции и операции.</li>
+                    <li><strong>Запрещено:</strong> Использование площадки для мошеннических схем, отмывания средств или других незаконных действий.</li>
+                    <li><strong>Комиссии:</strong> Размер комиссий указан в разделе «Финансы» и может меняться уведомлением за 3 дня.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h2>🚫 Нарушения</h2>
+                <p>При обнаружении нарушений ваша учётная запись может быть заблокирована без предупреждения. Все спорные ситуации решаются через раздел «Споры».</p>
+            </div>
+        </div>
+
+        <!-- ==================== ФУНКЦИОНАЛ ==================== -->
+        <div id="page-functions" class="page">
+            <h1>Функционал и работа</h1>
+            <div class="breadcrumb">Главная / <span>Функционал</span></div>
+            <div class="card">
+                <h2>⚙️ Что вы можете делать на площадке</h2>
+                <ul>
+                    <li><strong>Профиль:</strong> управление личными данными, смена пароля, настройки уведомлений.</li>
+                    <li><strong>Дашборд:</strong> главная страница с виджетами: баланс, последние транзакции, статус PayIn/PayOut.</li>
+                    <li><strong>Транзакции:</strong> история всех операций с фильтрами по дате, статусу, типу.</li>
+                    <li><strong>Финансы:</strong> детальная информация о балансе, доступных средствах, резервах.</li>
+                    <li><strong>PayIn:</strong> пополнение счёта через криптовалюту (USDT, BTC, ETH) или фиат.</li>
+                    <li><strong>PayOut:</strong> вывод средств на внешние кошельки или карты.</li>
+                    <li><strong>Споры:</strong> открытие и обработка спорных ситуаций по транзакциям.</li>
+                    <li><strong>Реквизиты:</strong> настройка платёжных реквизитов для приёма/вывода средств.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==================== ПРОФИЛЬ ==================== -->
+        <div id="page-profile" class="page">
+            <h1>Профиль</h1>
+            <div class="breadcrumb">Главная / <span>Профиль</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_71.png" alt="Основной профиль"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>📌 1. Rate</h2>
+                <ul>
+                    <li>Указан статус аккаунта (заблокирован = неактивен, разблокирован = активен).</li>
+                    <li>Указаны общие ставки на токене трейдера для PayIn/PayOut.</li>
+                </ul>
+                <h2>💰 2. Баланс</h2>
+                <ul>
+                    <li><strong>Рабочий баланс</strong> — используется для работы.</li>
+                    <li><strong>Замороженный баланс</strong> — «морозится» при активных / спорных ордерах на их сумму в $.</li>
+                </ul>
+                <blockquote style="border-left:3px solid #a78bfa; padding-left:16px; margin:12px 0; color:#c8c8dd;">
+                    Если заявка становится успешной — деньги из «Заморожено» списываются.<br>
+                    Если заявка становится отменённой — деньги из «Заморожено» возвращаются на «Рабочий» баланс.
+                </blockquote>
+                <ul>
+                    <li><strong>Страховой депозит</strong> — выставлен Администратором (не показывает реальный страховой депозит трейдера).</li>
+                </ul>
+                <h2>📈 3. Доход</h2>
+                <ul>
+                    <li><strong>PayIn:</strong> текущий доход (вознаграждение) от заявок на вход.</li>
+                    <li><strong>PayOut:</strong> текущий доход (вознаграждение) от заявок на выход.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_72.png" alt="Доход — общий, PayIn, PayOut"><div class="caption">Общий доход, PayIn, PayOut</div></div>
+                    <div class="img-wrap"><img src="Screenshot_73.png" alt="Перевод в общий доход"><div class="caption">Перевод в общий доход</div></div>
+                    <div class="img-wrap"><img src="Screenshot_74.png" alt="Перевод в рабочий баланс"><div class="caption">Перевод в рабочий баланс</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <blockquote style="border-left:3px solid #a78bfa; padding-left:16px; margin:0 0 16px 0; color:#c8c8dd;">
+                    <strong>Вышеперечисленный доход можно перевести на «Общий» доходный баланс. С него трейдер может перевести доход на «Рабочий» баланс или создать заявку на вывод доходного баланса (5$ комиссия).</strong>
+                </blockquote>
+                <h2>🔌 4. Подключенные мерчанты и курсы</h2>
+                <ul>
+                    <li><strong>Мерчант (ID):</strong> ID мерчанта (совпадает с ID во вкладке «Пользователи»).</li>
+                    <li><strong>Базовые комиссии / курсы:</strong> персональные ставки для данного трейдера для конкретного мерчанта на PayIn/PayOut.</li>
+                    <li><strong>Уровни комиссий:</strong> ставка PayIn/PayOut для разных диапазонов чеков у данного мерчанта.</li>
+                </ul>
+                <h2>🎨 5. Тема сайта</h2>
+                <ul><li>Тёмная</li><li>Светлая</li><li>Системная</li></ul>
+                <h2>👤 6. Логин трейдера</h2>
+                <p>Отображается логин текущего пользователя.</p>
+                <h2>📂 7. Боковая панель перемещения на платформе</h2>
+                <p>Навигация по разделам платформы.</p>
+                <h2>⚙️ 8. Блок управления потоком трафика</h2>
+                <ul>
+                    <li><strong>Тумблер активации потока трафика (ОФФЛАЙН/ОНЛАЙН)</strong> — регулируется администратором.</li>
+                    <li><strong>Актуальный курс</strong> — отображается текущий курс.</li>
+                    <li><strong>Блок балансов</strong> — сводка по всем балансам.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==================== ДАШБОРД ==================== -->
+        <div id="page-dashboard" class="page">
+            <h1>Дашборд</h1>
+            <div class="breadcrumb">Главная / <span>Дашборд</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_75.png" alt="Дашборд трейдера"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>📊 Основные показатели дашборда</h2>
+                <ul>
+                    <li><strong>1. Общая комиссия:</strong> общий доход со всех сделок в рублях.</li>
+                    <li><strong>2. Выполненные заявки:</strong> за всё время на Покупку/Продажу.</li>
+                    <li><strong>3. Активные заявки:</strong> в данный момент (в ожидании / в обработке).</li>
+                    <li><strong>4. Общий оборот:</strong> сумма всех выполненных заявок за всё время в рублях.</li>
+                    <li><strong>5. Интерактивная диаграмма:</strong> полученный доход по дням (график).</li>
+                    <li><strong>6. Фильтр дат:</strong> выбор периода для отображения данных.</li>
+                    <li><strong>7. Конверсия по реквизитам:</strong> процент успешных заявок по каждому реквизиту за период.</li>
+                    <li><strong>8. Объём по реквизитам:</strong> принятая сумма на каждый реквизит за период.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_76.png" alt="Конверсия и объём по реквизитам"><div class="caption">Конверсия реквизитов и объём по реквизитам</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p><strong>Средняя конверсия:</strong> отображается общий процент успешных заявок по всем реквизитам.</p>
+                <p><strong>Объём по реквизитам:</strong> показывает сумму принятых средств по каждому реквизиту за выбранный период.</p>
+            </div>
+        </div>
+
+        <!-- ==================== ТРАНЗАКЦИИ ==================== -->
+        <div id="page-transactions" class="page">
+            <h1>Транзакции</h1>
+            <div class="breadcrumb">Главная / <span>Транзакции</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_64.png" alt="История транзакций"></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>В истории транзакций отображены все финансовые изменения всех балансов по каждой заявке. У каждой заявки есть свой ID, тип, сумма, статус, Баланс до, Баланс после, дата, кнопка для подробного просмотра информации по заявке</p>
+                <ul>
+                    <li><strong>Депозит:</strong> пополнение "Рабочего" баланса</li>
+                    <li><strong>Доход (ордер):</strong> пополнения доходного баланса за успешную заявку</li>
+                    <li><strong>Вывод (ордер):</strong> списания с "Рабочего" баланса за успешную заявку</li>
+                    <li><strong>Кнопка для подробного просмотра информации по заявке</strong></li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_65.png" alt="Детали транзакции"></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>Здесь вы можете посмотреть подробную информацию по заявке</p>
+            </div>
+        </div>
+
+        <!-- ==================== ФИНАНСЫ ==================== -->
+        <div id="page-finance" class="page">
+            <h1>Финансы</h1>
+            <div class="breadcrumb">Главная / <span>Финансы</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_77.png" alt="Заявки на ввод/вывод"><div class="caption">Заявки на ввод/вывод</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <ul>
+                    <li><strong>1. ID заявки</strong></li>
+                    <li><strong>2. Тип</strong>
+                        <ul>
+                            <li>Вывод (доходный): вывод доходного баланса</li>
+                            <li>Депозит: пополнение токена</li>
+                        </ul>
+                    </li>
+                    <li><strong>3. Сумма</strong> пополнения/вывода, включая комиссию</li>
+                    <li><strong>4. Комиссия:</strong> 5$ при выводе с доходного баланса</li>
+                    <li><strong>5. Итого:</strong> итоговая сумма пополнения/вывода по заявке</li>
+                    <li><strong>6. Статус</strong>
+                        <ul>
+                            <li>Успешно</li>
+                            <li>Отклонено</li>
+                            <li>На проверке: присваивается при создании заявки на пополнение</li>
+                        </ul>
+                    </li>
+                    <li><strong>7. Дата создания</strong></li>
+                    <li><strong>8. Кнопка для пополнения баланса</strong></li>
+                </ul>
+                <p>При нажатии на кнопку "Пополнить баланс" открывается окно заполнения, в котором указан адрес пополнения, на который необходимо совершить перевод.</p>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_78.png" alt="Окно пополнения"><div class="caption">Окно пополнения баланса</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>После отправки средств необходимо указать точную сумму отправки (без комиссии), указать хэш транзакции и нажать кнопку <strong>«Создать заявку»</strong>.</p>
+                <p>После создания справа от заявки будет кнопка <strong>«Проверить»</strong> (10 пункт), она необходима для автоматической сверки хэша транзакции и суммы заявки. При верном указании хэша и суммы — заявка переходит в статус <strong>«Успешно»</strong> и баланс пополняется.</p>
+                <blockquote style="border-left:3px solid #a78bfa; padding-left:16px; margin:12px 0; color:#c8c8dd;">
+                    При неправильном вводе суммы или хэша необходимо создать новую заявку с верными данными. <strong>1 хэш = 1 пополнение</strong>
+                </blockquote>
+                <p><strong>9. Кнопка вывода доходного баланса</strong></p>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_79.png" alt="Окно вывода"><div class="caption">Окно вывода доходного баланса</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>Для вывода необходимо вписать сумму вывода с учётом комиссии, а также адрес для вывода. После создания заявки начнётся таймер. На заявку отводится <strong>24 часа</strong>.</p>
+                <p><strong>10. Кнопка справа заявки (ПРОВЕРИТЬ)</strong> — для автоматической проверки пополнения.</p>
+            </div>
+        </div>
+
+        <!-- ==================== PayIn ==================== -->
+        <div id="page-payin" class="page">
+            <h1>PayIn</h1>
+            <div class="breadcrumb">Главная / <span>PayIn</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_80.png" alt="Заявки на продажу (PayIn)"><div class="caption">Заявки на продажу (PayIn)</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>Визуал вкладки PayIn во многом схож с PayOut. Из нового могу выделить указание реквизитов пополнения, а также кнопка <strong>«Документ»</strong> для получения документа об оплате от мерчанта.</p>
+                <p>Также под курсом красной стрелочкой обозначена сумма в $, которая будет списана с <strong>«Рабочего»</strong> баланса при успехе, зелёной стрелочкой обозначена сумма, которая будет начислена в качестве вознаграждения на доходный <strong>«PayIn»</strong> баланс.</p>
+                <p>При подтверждении активной/спорной/истекшей заявок потребуется повторное нажатие кнопки <strong>«Подтвердить»</strong> во избежание случайного подтверждения заявки.</p>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_81.png" alt="Подтверждение заявки PayIn"><div class="caption">Подтверждение заявки</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>При подтверждении заявки система запросит повторное подтверждение во избежание случайного нажатия.</p>
+            </div>
+        </div>
+
+        <!-- ==================== СПОРЫ ==================== -->
+        <div id="page-disputes" class="page">
+            <h1>Споры</h1>
+            <div class="breadcrumb">Главная / <span>Споры</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_82.png" alt="Активные диспуты"><div class="caption">Активные диспуты</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>В данной вкладке указаны все активные диспуты.</p>
+                <p><strong>Споры на PayIn</strong> возможно подтвердить тут же, нажав кнопку <strong>«Подтвердить»</strong>. Документ с доказательством от мерча будет прислан в рабочий чат трейдера.</p>
+                <p><strong>Споры на PayOut</strong> можно решить только с Администратором. Все доказательства также будут направлены в рабочий чат.</p>
+            </div>
+        </div>
+
+        <!-- ==================== РЕКВИЗИТЫ ==================== -->
+        <div id="page-devices" class="page">
+            <h1>Реквизиты</h1>
+            <div class="breadcrumb">Главная / <span>Реквизиты</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_83.png" alt="Общий вид реквизитов"><div class="caption">Список реквизитов трейдера</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>Вкладка реквизиты содержит все реквизиты трейдера с понятным визуалом для отслеживания необходимых метрик.</p>
+                <ul>
+                    <li><strong>1. Созданный реквизит:</strong>
+                        <ul>
+                            <li>Общий тумблер для включения реквизита</li>
+                            <li>Тумблеры настройки необходимого типа трафика для получения</li>
+                            <li>Название и ФИО реквизита</li>
+                            <li>Номер телефона/карты и банк получателя</li>
+                            <li>Устройство, к которому привязан данный реквизит</li>
+                            <li>Дневной лимит (обновляется в 00:00 мск)</li>
+                            <li>Общий лимит</li>
+                            <li>Мин/Макс сумма ордера</li>
+                            <li>Кол-во платежей в сутки (обновляется в 00:00 мск)</li>
+                            <li>Кол-во параллельных сделок</li>
+                            <li>Пробег — количество успешных/спорных заявок на данный реквизит за сутки/неделю/месяц</li>
+                            <li>Конверсия в %, а также в виде успешных заявок / на общее количество заявок</li>
+                            <li>Кнопка просмотра подробной информации об реквизите</li>
+                            <li>Кнопка изменения реквизита (номер телефона и номер карты невозможно изменить)</li>
+                            <li>Кнопка архивирования реквизита</li>
+                        </ul>
+                    </li>
+                    <li><strong>2. Кнопка добавления реквизита</strong></li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_84.png" alt="Добавление реквизита - общий вид"><div class="caption">Добавление реквизита (начало)</div></div>
+                    <div class="img-wrap"><img src="Screenshot_85.png" alt="Добавление реквизита - выбор устройства"><div class="caption">Добавление реквизита (выбор устройства)</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <ul>
+                    <li><strong>Название карты</strong> — любое удобное для вас название реквизита</li>
+                    <li><strong>ФИО получателя</strong></li>
+                    <li><strong>Банк</strong> (если нет нужного в списке, обратитесь к Администратору)</li>
+                    <li><strong>Валюта</strong></li>
+                    <li><strong>Номер карты/счета/телефона</strong></li>
+                    <li><strong>Дневной лимит</strong></li>
+                    <li><strong>Общий лимит</strong></li>
+                    <li><strong>Мин/Макс сумма ордера</strong></li>
+                    <li><strong>Максимальное количество платежей в сутки</strong> (считает заявки в любом статусе)</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_86.png" alt="Настройки фермы"><div class="caption">Настройки фермы</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <ul>
+                    <li><strong>Максимальное количество одновременно активных заявок</strong></li>
+                    <li><strong>Задержка в минутах между заявками</strong></li>
+                    <li><strong>Устройство</strong></li>
+                    <li><strong>Настройка "Использовать только уникальные суммы"</strong>, позволяющая получать лишь уникальные суммы без повтора</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_87.png" alt="Архив и восстановление реквизитов"><div class="caption">Архив и восстановление реквизитов</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>Точно так же, как и с PayOut, реквизиты можно отправлять в архив и восстанавливать их без изменения данных.</p>
+            </div>
+        </div>
+
+        <!-- ==================== PAYOUT ==================== -->
+        <div id="page-payout" class="page">
+            <h1>PayOut</h1>
+            <div class="breadcrumb">Главная / <span>PayOut</span></div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_88.png" alt="PayOut - общий вид"><div class="caption">Общий вид раздела PayOut</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p><strong>Создать пул:</strong> создание пула необходимо для работы с PayOut.</p>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_89.png" alt="Создание пула PayOut"><div class="caption">Создание пула для выплат</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>Для создания пула необходимо ввести название пула, выбрать метод отправки, реквизит отправления, сумму пула, а также мин/макс сумма ордера.</p>
+                <ul>
+                    <li><strong>1. Визуал пула</strong>
+                        <ul>
+                            <li>Имя</li>
+                            <li>Общая сумма (верхний лимит)</li>
+                            <li>Использовано (учитывает активные/спорные заявки)</li>
+                            <li>Доступно: доступная сумма для получения выплат</li>
+                            <li>Способ оплаты: СБП/С2С</li>
+                            <li>Лимиты ордера: мин/макс сумма заявки</li>
+                            <li>Остаток по неттингу (при включенной настройке Администратором): отображает сумму выплат, которая поступит трейдеру, в зависимости от суммы успешных заявок PayIn на данный реквизит</li>
+                            <li>Кнопка архивирования пула</li>
+                            <li>Статус активности пула</li>
+                            <li>Кнопка "Изменить" для изменения данных пула</li>
+                            <li>Кнопка для включения/отключения активности пула</li>
+                            <li>Реквизит, использованный в данном конкретно пуле (можно изменить)</li>
+                        </ul>
+                    </li>
+                    <li><strong>2. Заявка на PayOut</strong>
+                        <ul>
+                            <li>ID заявки: внутренний (создает платформа), внешний (получаем от мерчанта)</li>
+                            <li>Статус заявки</li>
+                            <li>Сумма заявки</li>
+                            <li>Курс заявки</li>
+                            <li>Под курсом красной стрелочкой указана сумма отправки в рублях, зеленой стрелочкой показана сумма, которая поступит на баланс при успехе</li>
+                            <li>Реквизит + Банк для оплаты</li>
+                            <li>Название пула + реквизит отправления</li>
+                            <li>Дата создания</li>
+                            <li>Чат: используется для отслеживания статуса заявки, действий с ней, чеков оплаты и т.д.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_90.png" alt="Фильтр поиска заявок"><div class="caption">Фильтр поиска заявок</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <ul>
+                    <li><strong>1. Фильтр поиска заявок</strong>
+                        <ul>
+                            <li>Поиск по ID заявки</li>
+                            <li>Поиск по сумме заявки</li>
+                            <li>Поиск по статусам заявки</li>
+                            <li>Фильтр периода поиска</li>
+                            <li>Кнопка сброса</li>
+                            <li>Архив пулов — любой пул можно отправить в архив и восстановить обратно без изменения лимитов самого пула</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_91.png" alt="Разбор работы с активной заявкой"><div class="caption">Разбор работы с активной заявкой PayOut</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Разбор работы с активной заявкой PayOut</h2>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_92.png" alt="Подтверждение выплаты"><div class="caption">Подтверждение выплаты</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>У каждой активной заявки есть таймер, который устанавливает мерчант. У трейдера есть возможность отменить или подтвердить выплату.</p>
+                <p>При подтверждении выплаты необходимо прикрепить доказательство совершения выплаты. Для выплаты по СБП обязательно необходим документ в формате ПДФ для проверки в чекере на подлинность.</p>
+                <p>Для выплаты по С2С методу можно прикреплять любые доказательства до 100 Мб.</p>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_93.png" alt="Ожидание админа"><div class="caption">Ожидание админа</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>После прикрепления доказательств оплаты при отключенной функции <strong>«Автоапрув»</strong> (настраивает Администратор) заявка падает в статус <strong>«Ожидание админа»</strong>. Данная заявка должна быть проверена Администратором и после подтверждения заявка считается успешной.</p>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_94.png" alt="Отмена заявки"><div class="caption">Отмена заявки</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Отмена заявки</h2>
+            </div>
+            <div class="card">
+                <div class="screenshot-gallery">
+                    <div class="img-wrap"><img src="Screenshot_95.png" alt="Причина отмены"><div class="caption">Причина отмены</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <p>Для отмены выплаты необходимо указать причину отмены. При отмене по причине <strong>«Карта заблокирована»</strong> необходимо прикрепить доказательство и заявка отменяется с отправкой callback мерчанту об отмене.</p>
+                <p>При выборе остальных причин ничего прикреплять не нужно. Такая заявка распределяется на другого трейдера, либо в общий пул (хранилище выплат для последующего распределения трейдерам).</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ===== ПЕРЕКЛЮЧЕНИЕ СТРАНИЦ =====
+        const navLinks = document.querySelectorAll('.sidebar nav a');
+        const pages = document.querySelectorAll('.content .page');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                pages.forEach(p => p.classList.remove('active'));
+                const pageId = this.dataset.page;
+                const target = document.getElementById('page-' + pageId);
+                if (target) target.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
